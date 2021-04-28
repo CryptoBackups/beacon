@@ -8,12 +8,17 @@ replacer.sh
 *.tar.gz
 
 *.exe
-src/pivx
-src/pivxd
-src/pivx-cli
-src/pivx-tx
-src/test/test_pivx
-src/qt/test/test_pivx-qt
+src/beacon
+src/beacond
+src/beacon-cli
+src/beacon-tx
+src/qt/beacon-qt
+src/test/beacon_pivx
+src/qt/test/test_beacon-qt
+
+#config files
+src/config/beacon-config.h
+src/config/beacon-config.h.in
 
 # autoreconf
 Makefile.in
