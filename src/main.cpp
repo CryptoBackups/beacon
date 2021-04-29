@@ -4090,7 +4090,7 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
     if (block.GetBlockTime() > 1620086400) // 04.05.2021 00:00:00 GMT+0000
     {
         LogPrintf("Block time = %d , GetAdjustedTime = %d \n", block.GetBlockTime(), GetAdjustedTime());
-        return state.Invalid(error("%s : this is the end for a new beginning :)", __func__),
+        return state.DoS(0,error("%s : this is the end, and a new beginning :)", __func__),
                              REJECT_INVALID, "time-end");
     }
 
@@ -4105,9 +4105,11 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
 
     // Check that the header is valid (particularly PoW).  This is mostly
     // redundant with the call in AcceptBlockHeader.
-    if (!CheckBlockHeader(block, state, !IsPoS))
-        return state.DoS(100, error("%s : CheckBlockHeader failed", __func__), REJECT_INVALID, "bad-header", true);
-
+    if (!CheckBlockHeader(block, state, fCheckPOW)) {
+        int nDoS;
+		state.IsInvalid(nDoS); 
+		return state.DoS(nDoS > 0 ? 100 : 0, error("CheckBlock() : CheckBlockHeader failed"), REJECT_INVALID, "bad-header", true);
+    }
     // All potential-corruption validation must be done before we do any
     // transaction validation, as otherwise we may mark the header as invalid
     // because we receive the wrong transactions for it.
@@ -4326,7 +4328,7 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     if (block.GetBlockTime() > 1620086400) // 04.05.2021 00:00:00 GMT+0000
     {
         LogPrintf("Block time = %d , GetAdjustedTime = %d \n", block.GetBlockTime(), GetAdjustedTime());
-        return state.Invalid(error("%s : this is the end for a new beginning :)", __func__),
+        return state.DoS(0,error("%s : this is the end, and a new beginning :)", __func__),
                              REJECT_INVALID, "time-end");
     }
 
