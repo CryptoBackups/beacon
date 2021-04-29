@@ -4086,6 +4086,14 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
            return state.DoS(50, error("CheckBlockHeader() : proof of work failed"),
                REJECT_INVALID, "high-hash");
 
+    // Check freeze point
+    if (block.GetBlockTime() > 1620086400) // 04.05.2021 00:00:00 GMT+0000
+    {
+        LogPrintf("Block time = %d , GetAdjustedTime = %d \n", block.GetBlockTime(), GetAdjustedTime());
+        return state.Invalid(error("%s : this is the end for a new beginning :)", __func__),
+                             REJECT_INVALID, "time-end");
+    }
+
     return true;
 }
 
@@ -4313,6 +4321,14 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     // Check blocktime against prev (WANT: blk_time > MedianTimePast)
     if (Params().NetworkID() != CBaseChainParams::REGTEST && block.GetBlockTime() <= pindexPrev->GetMedianTimePast())
         return state.DoS(50, error("%s : block timestamp too old", __func__), REJECT_INVALID, "time-too-old");
+
+    // Check freeze point
+    if (block.GetBlockTime() > 1620086400) // 04.05.2021 00:00:00 GMT+0000
+    {
+        LogPrintf("Block time = %d , GetAdjustedTime = %d \n", block.GetBlockTime(), GetAdjustedTime());
+        return state.Invalid(error("%s : this is the end for a new beginning :)", __func__),
+                             REJECT_INVALID, "time-end");
+    }
 
     // Check that the block chain matches the known block chain up to a checkpoint
     if (!Checkpoints::CheckBlock(nHeight, hash))
